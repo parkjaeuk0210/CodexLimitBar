@@ -31,6 +31,7 @@ EOF
   exit 2
 fi
 
+SIGN_IDENTITY_HASH="$(printf '%s\n' "$IDENTITY_LINE" | awk '{ print $2 }')"
 APP_DIR="$("$ROOT/scripts/build.sh")"
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP_DIR/Contents/Info.plist")"
 SIGNED_ZIP="$DIST_DIR/CodexLimitBar-$VERSION-notary-upload.zip"
@@ -40,7 +41,7 @@ mkdir -p "$DIST_DIR"
 rm -f "$SIGNED_ZIP" "$FINAL_ZIP" "$FINAL_ZIP.sha256"
 
 xattr -cr "$APP_DIR" 2>/dev/null || true
-codesign --force --deep --options runtime --timestamp --sign "$SIGN_IDENTITY" "$APP_DIR"
+codesign --force --deep --options runtime --timestamp --sign "$SIGN_IDENTITY_HASH" "$APP_DIR"
 codesign --verify --deep --strict --verbose=2 "$APP_DIR"
 
 ditto -c -k --keepParent "$APP_DIR" "$SIGNED_ZIP"

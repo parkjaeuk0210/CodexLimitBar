@@ -95,3 +95,36 @@ After the tap is updated, verify the install path:
 brew fetch --cask codexlimitbar --force
 brew install --cask --dry-run codexlimitbar
 ```
+
+## GitHub Actions Release
+
+The repository includes `.github/workflows/release.yml`. Once the required
+secrets are configured, pushing a `v*` tag or running the workflow manually
+builds, signs, notarizes, staples, and uploads the notarized zip to the matching
+GitHub release.
+
+Required repository secrets:
+
+```text
+DEVELOPER_ID_APPLICATION_CERTIFICATE_BASE64
+DEVELOPER_ID_APPLICATION_CERTIFICATE_PASSWORD
+KEYCHAIN_PASSWORD
+ASC_API_KEY_BASE64
+ASC_KEY_ID
+ASC_ISSUER_ID
+```
+
+Create the certificate secret from an exported `.p12` file:
+
+```sh
+base64 -i DeveloperIDApplication.p12 | pbcopy
+```
+
+Create the App Store Connect API key secret from the `.p8` file:
+
+```sh
+base64 -i AuthKey_ABC123.p8 | pbcopy
+```
+
+After the workflow uploads `CodexLimitBar-<version>-notarized.zip`, update the
+Homebrew tap to use that asset and checksum instead of the unsigned zip.

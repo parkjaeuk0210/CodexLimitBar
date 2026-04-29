@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Added scripts and documentation for Developer ID signed, notarized releases.
+- Added a GitHub Actions workflow for notarized release uploads.
 
 ## 0.1.1
 
