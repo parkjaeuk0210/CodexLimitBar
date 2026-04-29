@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Added scripts and documentation for Developer ID signed, notarized releases.
+
 ## 0.1.1
 
 - Added Homebrew Cask distribution metadata.

@@ -94,6 +94,9 @@ dist/CodexLimitBar-<version>-unsigned.zip
 dist/CodexLimitBar-<version>-unsigned.zip.sha256
 ```
 
+For Developer ID signing and notarized public releases, see
+[docs/notarization.md](docs/notarization.md).
+
 ## How It Works
 
 ```text
