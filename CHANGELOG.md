@@ -4,6 +4,8 @@
 
 - Added scripts and documentation for Developer ID signed, notarized releases.
 - Added a GitHub Actions workflow for notarized release uploads.
+- Added helper scripts for CSR generation, p12 export, and release secrets setup.
+- Added a release secrets readiness check.
 
 ## 0.1.1
 

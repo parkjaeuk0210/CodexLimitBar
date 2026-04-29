@@ -27,6 +27,29 @@ You should see an identity similar to:
 Developer ID Application: Your Name (TEAMID)
 ```
 
+## Create A Developer ID Certificate Request
+
+Create a local CSR and private key:
+
+```sh
+./scripts/create-developer-id-csr.sh
+```
+
+This writes files under `.secrets/developer-id/`, which is ignored by git:
+
+```text
+.secrets/developer-id/CodexLimitBar-DeveloperID.csr
+.secrets/developer-id/developer-id-private-key.pem
+```
+
+Upload the `.csr` file in Apple Developer Certificates and choose
+`Developer ID Application`. After Apple gives you the `.cer` file, create the
+`.p12` bundle for GitHub Actions:
+
+```sh
+./scripts/create-github-release-p12.sh ~/Downloads/developerID_application.cer
+```
+
 ## Save Notary Credentials
 
 Apple ID app-specific password mode:
@@ -114,6 +137,12 @@ ASC_KEY_ID
 ASC_ISSUER_ID
 ```
 
+Check which release secrets are still missing:
+
+```sh
+./scripts/check-release-secrets.sh
+```
+
 Create the certificate secret from an exported `.p12` file:
 
 ```sh
@@ -124,6 +153,15 @@ Create the App Store Connect API key secret from the `.p8` file:
 
 ```sh
 base64 -i AuthKey_ABC123.p8 | pbcopy
+```
+
+Or set all release secrets from local files:
+
+```sh
+ASC_API_KEY_PATH=/path/AuthKey_ABC123.p8 \
+ASC_KEY_ID=ABC123 \
+ASC_ISSUER_ID=00000000-0000-0000-0000-000000000000 \
+./scripts/set-release-secrets.sh
 ```
 
 After the workflow uploads `CodexLimitBar-<version>-notarized.zip`, update the
