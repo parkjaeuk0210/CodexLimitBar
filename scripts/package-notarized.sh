@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT/dist"
 PROFILE="${CODEX_LIMIT_BAR_NOTARY_PROFILE:-codexlimitbar-notary}"
 SIGN_IDENTITY="${CODEX_LIMIT_BAR_SIGN_IDENTITY:-Developer ID Application}"
-NOTARY_TIMEOUT="${CODEX_LIMIT_BAR_NOTARY_TIMEOUT:-30m}"
+NOTARY_TIMEOUT="${CODEX_LIMIT_BAR_NOTARY_TIMEOUT:-90m}"
 
 IDENTITIES="$(security find-identity -v -p codesigning || true)"
 IDENTITY_LINE="$(printf '%s\n' "$IDENTITIES" | grep -F "$SIGN_IDENTITY" | head -n 1 || true)"
