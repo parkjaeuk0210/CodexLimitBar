@@ -1,11 +1,39 @@
 # CodexLimitBar
 
-CodexLimitBar is a tiny macOS menu bar app for keeping an eye on your Codex
-usage window without opening a browser.
+[![Latest release](https://img.shields.io/github/v/release/parkjaeuk0210/CodexLimitBar?sort=semver)](https://github.com/parkjaeuk0210/CodexLimitBar/releases/latest)
+[![macOS 13+](https://img.shields.io/badge/macOS-13%2B-111111?logo=apple&logoColor=white)](#requirements)
+[![License: MIT](https://img.shields.io/badge/license-MIT-2f855a)](LICENSE)
 
-It shows a compact Codex-style icon plus the remaining percent for the selected
-limit window. You can switch the displayed limit between the 5-hour window and
-the weekly window from the menu.
+Keep your Codex limit in the macOS menu bar.
+
+CodexLimitBar is for the moment when you are deep in a session and just want to
+know one thing: how much room is left? It shows a compact menu bar meter for
+your Codex usage, refreshes quietly in the background, and lets you switch
+between the 5-hour and weekly limit windows.
+
+![CodexLimitBar menu bar preview](docs/assets/menu-preview.svg)
+
+No browser tab. No manual `/status` check. No private token scraping.
+
+## What It Shows
+
+- Remaining Codex usage as a compact menu bar percentage.
+- Either the 5-hour window or the weekly window.
+- The installed Codex or ChatGPT app icon when macOS can find one.
+- Last refresh time and current refresh cadence in the menu.
+
+## Download
+
+Grab the latest build from [Releases](https://github.com/parkjaeuk0210/CodexLimitBar/releases/latest):
+
+```text
+CodexLimitBar-0.1.0-unsigned.zip
+```
+
+Unzip it, move `CodexLimitBar.app` to `/Applications`, then launch it.
+
+This early build is unsigned and not notarized yet. On first launch, macOS may
+show a security warning. Control-click the app, choose **Open**, then confirm.
 
 ## Requirements
 
@@ -13,23 +41,35 @@ the weekly window from the menu.
 - Codex CLI installed and available as `codex`
 - A logged-in Codex CLI session (`codex login`)
 
-The app can read usage with only the Codex CLI installed. If the Codex or
-ChatGPT desktop app is installed, CodexLimitBar uses that local app icon in the
-menu bar. Otherwise it falls back to a generic system icon.
+You do not need the Codex desktop app. If Codex or ChatGPT is installed,
+CodexLimitBar borrows that local app icon for the menu bar. If not, it still
+works with the Codex CLI and falls back to a system icon.
 
-## Install
+## Battery And Privacy
 
-Download `CodexLimitBar-0.1.0-unsigned.zip` from GitHub Releases, unzip it, and
-move `CodexLimitBar.app` to `/Applications`.
+CodexLimitBar is intentionally quiet:
 
-This first build is unsigned and not notarized. macOS may block the first
-launch. If that happens, Control-click the app, choose **Open**, then confirm.
+- It refreshes every 15 minutes on power adapter.
+- It refreshes every 10 minutes on battery.
+- It refreshes every 30 minutes in Low Power Mode.
+- It starts a short-lived local Codex app-server only while refreshing.
+- It does not read `~/.codex/auth.json` directly.
+- It stores only the latest cached usage snapshot in
+  `~/Library/Application Support/CodexLimitBar`.
+
+In normal use, the app should spend almost all of its time idle.
 
 ## Build From Source
 
 ```sh
 ./scripts/build.sh
 open .build/CodexLimitBar.app
+```
+
+## Check
+
+```sh
+./scripts/check.sh
 ```
 
 ## Package
@@ -45,13 +85,7 @@ dist/CodexLimitBar-<version>-unsigned.zip
 dist/CodexLimitBar-<version>-unsigned.zip.sha256
 ```
 
-## Check
-
-```sh
-./scripts/check.sh
-```
-
-## Runtime Flow
+## How It Works
 
 ```text
 Menu timer or Refresh Now
@@ -64,14 +98,24 @@ Menu timer or Refresh Now
 -> NSStatusItem menu title
 ```
 
-## Behavior
+The important part: CodexLimitBar asks the local Codex CLI for the same account
+limit data instead of reading credential files itself.
 
-- Reads usage with `codex app-server` and `account/rateLimits/read`.
-- Does not read `~/.codex/auth.json` directly.
-- Caches the most recent snapshot in `~/Library/Application Support/CodexLimitBar`.
-- Refreshes every 15 minutes on power adapter, 10 minutes on battery, and 30
-  minutes in Low Power Mode.
-- Starts a short-lived local Codex app-server only while refreshing.
+## Current Limitations
+
+- macOS only.
+- Requires the Codex CLI to be installed and logged in.
+- The first public build is unsigned and not notarized.
+- The Codex app-server protocol is local and not a formally documented public
+  API. If it changes, the app will show an error instead of touching private
+  credentials.
+
+## Roadmap
+
+- Signed and notarized releases.
+- Homebrew Cask install.
+- A shorter first-run flow for unsigned builds.
+- Optional threshold color or notification settings.
 
 ## Source Layout
 
@@ -85,12 +129,8 @@ Sources/CodexLimitBar/AppDelegate.swift            macOS menu and app lifecycle
 Sources/CodexLimitBar/main.swift                   app entrypoint
 ```
 
-## Notes
+## Trademark
 
-The Codex app-server protocol is local and not a formally documented public
-API. If it changes, the app will show an error in the menu instead of reading
-private credential files directly.
-
-CodexLimitBar is not affiliated with OpenAI. Codex and ChatGPT are trademarks
-of OpenAI. The app uses installed local app icons when available and does not
+CodexLimitBar is not affiliated with OpenAI. Codex and ChatGPT are trademarks of
+OpenAI. The app uses installed local app icons when available and does not
 bundle OpenAI logo assets.
