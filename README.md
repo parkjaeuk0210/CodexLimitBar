@@ -22,12 +22,21 @@ No browser tab. No manual `/status` check. No private token scraping.
 - The installed Codex or ChatGPT app icon when macOS can find one.
 - Last refresh time and current refresh cadence in the menu.
 
-## Download
+## Install
+
+### Homebrew
+
+```sh
+brew tap parkjaeuk0210/codexlimitbar
+brew install --cask codexlimitbar
+```
+
+### Manual Download
 
 Grab the latest build from [Releases](https://github.com/parkjaeuk0210/CodexLimitBar/releases/latest):
 
 ```text
-CodexLimitBar-0.1.0-unsigned.zip
+CodexLimitBar-<version>-unsigned.zip
 ```
 
 Unzip it, move `CodexLimitBar.app` to `/Applications`, then launch it.
@@ -105,7 +114,7 @@ limit data instead of reading credential files itself.
 
 - macOS only.
 - Requires the Codex CLI to be installed and logged in.
-- The first public build is unsigned and not notarized.
+- Current releases are unsigned and not notarized.
 - The Codex app-server protocol is local and not a formally documented public
   API. If it changes, the app will show an error instead of touching private
   credentials.
@@ -113,7 +122,7 @@ limit data instead of reading credential files itself.
 ## Roadmap
 
 - Signed and notarized releases.
-- Homebrew Cask install.
+- Signed and notarized Homebrew Cask releases.
 - A shorter first-run flow for unsigned builds.
 - Optional threshold color or notification settings.
 

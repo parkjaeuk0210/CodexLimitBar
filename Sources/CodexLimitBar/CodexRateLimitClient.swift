@@ -59,7 +59,7 @@ final class CodexRateLimitClient {
             "params": [
                 "clientInfo": [
                     "name": "CodexLimitBar",
-                    "version": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.1.0"
+                    "version": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.1.1"
                 ],
                 "capabilities": [
                     "experimentalApi": true
