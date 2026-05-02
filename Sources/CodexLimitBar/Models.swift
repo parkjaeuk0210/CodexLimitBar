@@ -38,6 +38,7 @@ enum LimitFetchError: LocalizedError {
     case appServerNotReady
     case rpcError(String)
     case malformedResponse
+    case timedOut
 
     var errorDescription: String? {
         switch self {
@@ -51,6 +52,8 @@ enum LimitFetchError: LocalizedError {
             return message
         case .malformedResponse:
             return "codex app-server returned an unexpected response"
+        case .timedOut:
+            return "codex app-server request timed out"
         }
     }
 }

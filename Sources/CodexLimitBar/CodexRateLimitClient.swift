@@ -19,10 +19,7 @@ final class CodexRateLimitClient {
 
         try process.run()
         defer {
-            if process.isRunning {
-                process.terminate()
-                process.waitUntilExit()
-            }
+            Self.stop(process)
             try? nullHandle?.close()
         }
 
@@ -76,7 +73,8 @@ final class CodexRateLimitClient {
 
         let deadline = Date().addingTimeInterval(8)
         while Date() < deadline {
-            let message = try await webSocket.receive()
+            let remaining = max(0.1, deadline.timeIntervalSinceNow)
+            let message = try await receiveMessage(from: webSocket, timeout: remaining)
             let data: Data
             switch message {
             case .data(let payload):
@@ -109,6 +107,27 @@ final class CodexRateLimitClient {
         }
 
         throw LimitFetchError.malformedResponse
+    }
+
+    private func receiveMessage(from webSocket: URLSessionWebSocketTask, timeout: TimeInterval) async throws -> URLSessionWebSocketTask.Message {
+        try await withThrowingTaskGroup(of: URLSessionWebSocketTask.Message.self) { group in
+            defer { group.cancelAll() }
+
+            group.addTask {
+                try await webSocket.receive()
+            }
+            group.addTask {
+                let nanoseconds = UInt64(max(0.1, timeout) * 1_000_000_000)
+                try await Task.sleep(nanoseconds: nanoseconds)
+                webSocket.cancel(with: .goingAway, reason: nil)
+                throw LimitFetchError.timedOut
+            }
+
+            guard let message = try await group.next() else {
+                throw LimitFetchError.timedOut
+            }
+            return message
+        }
     }
 
     private func sendJSON(_ object: [String: Any], over webSocket: URLSessionWebSocketTask) async throws {
@@ -154,6 +173,27 @@ final class CodexRateLimitClient {
             return path.isEmpty ? nil : path
         } catch {
             return nil
+        }
+    }
+
+    private static func stop(_ process: Process) {
+        guard process.isRunning else { return }
+        process.terminate()
+        waitBriefly(for: process, timeout: 1)
+
+        if process.isRunning {
+            kill(process.processIdentifier, SIGKILL)
+            waitBriefly(for: process, timeout: 1)
+        }
+    }
+
+    private static func waitBriefly(for process: Process, timeout: TimeInterval) {
+        let deadline = Date().addingTimeInterval(timeout)
+        while process.isRunning && Date() < deadline {
+            Thread.sleep(forTimeInterval: 0.05)
+        }
+        if !process.isRunning {
+            process.waitUntilExit()
         }
     }
 
