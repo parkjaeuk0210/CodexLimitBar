@@ -24,6 +24,7 @@ struct MenuBarTitleFormatter {
 
         guard let used = window?.usedPercent else { return "?" }
         let remaining = max(0, 100 - used)
-        return "\(remaining)%"
+        let uncertainty = latestError == nil ? "" : "?"
+        return "\(remaining)%\(uncertainty)"
     }
 }

@@ -29,9 +29,12 @@ final class CodexRateLimitClient {
 
     private func waitUntilReady(port: UInt16) async throws {
         let url = URL(string: "http://127.0.0.1:\(port)/readyz")!
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 1
+
         for _ in 0..<40 {
             do {
-                let (_, response) = try await URLSession.shared.data(from: url)
+                let (_, response) = try await URLSession.shared.data(for: request)
                 if (response as? HTTPURLResponse)?.statusCode == 200 {
                     return
                 }
